@@ -8,7 +8,6 @@ export function findPointsMean(points: Point[]): Point {
   return [agg[0] / points.length, agg[1] / points.length];
 }
 
-
 export function findTranspose(matrix: Matrix): Matrix {
   if (matrix.length === 0) return [];
   
@@ -26,29 +25,41 @@ export function findTranspose(matrix: Matrix): Matrix {
   return result;
 }
 
-export function findCovariance(data: Matrix): Matrix {
-  const numVars = data.length; // Number of variables (rows)
-  const numSamples = data[0].length;
+export function findCovarianceMatrix(data: Matrix): Matrix {
+  const means: number[] = data.map(findMean);
+  const variances: number[] = data.map((v: number[], i: number) => {
+    const mean: number = means[i];
+    return v.reduce((acc: number, next: number) => {
+      return acc + ((next - mean) ** 2);
+    }, 0) / v.length;
+  });
 
-  // console.log('data', data)
+  const varCount: number = data.length;
+  const varLength: number = data[0].length;
 
-  // console.log('numVars', numVars, 'numSamples', numSamples)
+  const covMatrix: Matrix = Array.from({ length: varCount }).map(() => {
+    return Array.from({ length: varCount }).fill(0);
+  }) as Matrix;
 
-  const means = data.map(findMean);
-  const covMatrix = Array(numVars).fill(0).map(() => Array(numVars).fill(0));
+  for (let i = 0; i < varCount; i++) {
+    for (let j = 0; j < varCount; j++) {
+      if (i === j) {
+        covMatrix[i][j] = variances[i];
+      } else {
 
-  for (let i = 0; i < numVars; i++) {
-    for (let j = 0; j < numVars; j++) {
-      let sum = 0;
-      for (let k = 0; k < numSamples; k++) {
-        sum += (data[i][k] - means[i]) * (data[j][k] - means[j]);
-        // console.log('sum', sum)
+        let covariance: number = 0;
+        for (let k = 0; k < varLength; k++) {
+          const x = data[i][k] - means[i];
+          const y = data[j][k] - means[j];
+
+          covariance += x * y
+        }
+
+        covariance /= varLength;
+        covMatrix[i][j] = covariance
       }
-      covMatrix[i][j] = sum / (numSamples - 1);
     }
   }
-
-  // console.log('covMatrix', covMatrix)
 
   return covMatrix;
 }
