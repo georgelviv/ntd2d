@@ -1,31 +1,27 @@
-import { Matrix, Point, Result } from './models';
-import { findMean, findTranspose } from './utils';
+import { Grid, Point, Result } from './models';
+import { findGrid } from './utils';
 
-export function match2dPoints(source: Point[], target: Point[]): Result {
-  computeNTDGrid(source)
+export function ndt(source: Point[], target: Point[]): Result {
+  computeNTDGrid(source);
+  console.log(target);
   return {
     translation: [0, 0],
     rotation: 10
-  }
-}
+  };
+};
 
-function computeNTDGrid(points: Point[], gridSize = 20) {
-  const grid: {[key: string]: Point[]} = {};
-  for (let point of points) {
-    const key: string = point.map((v) => Math.round(v / gridSize)).join(',');
-    if (!(key in grid)) {
-      grid[key] = []
-    }
-    grid[key].push(point)
-  }
+function computeNTDGrid(points: Point[], gridSize = 100) {
+  const grid: Grid = findGrid(points, gridSize);
+  console.log(grid);
 
-  const gaussian = {};
-  for (let key in grid) {
-    const list: Point[] = grid[key];
-    const mean: Point = findMean(list);
-    const transposed: Matrix = findTranspose(list);
-    console.log(11, list, 22, transposed)
-  }
+  // const gaussian = {};
+  // for (let key in grid) {
+  //   const list: Point[] = grid[key];
+  //   const mean: Point = findPointsMean(list);
+  //   const transposed: Matrix = findTranspose(list);
+  //   console.log('key', key)
+  //   const cov: Matrix = findCovariance(transposed);
+  // }
   // for key, pts in grid.items():
   //     pts = np.array(pts)
   //     mean = np.mean(pts, axis=0)

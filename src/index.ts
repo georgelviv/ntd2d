@@ -1,2 +1,2 @@
-export { match2dPoints } from './match';
-export { Point, Result } from './models';
+export { ndt } from './match';
+export { Point, Result, Grid } from './models';

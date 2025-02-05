@@ -6,3 +6,7 @@ export interface Result {
 }
 
 export type Matrix = number[][];
+
+export type Grid = {
+  [key: string]: Point[]
+}
