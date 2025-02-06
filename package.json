@@ -10,6 +10,7 @@
     "build:cjs": "tsc --module commonjs --target ES2017 --outDir dist/cjs/ && echo '{\"type\": \"commonjs\"}' > dist/cjs/package.json",
     "build": "npm run build:esm && npm run build:cjs",
     "lint": "npx eslint .",
+    "lint:fix": "npx eslint . --fix",
     "test": "jest"
   },
   "exports": {

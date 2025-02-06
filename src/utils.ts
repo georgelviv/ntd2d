@@ -52,11 +52,11 @@ export function findCovarianceMatrix(data: Matrix): Matrix {
           const x = data[i][k] - means[i];
           const y = data[j][k] - means[j];
 
-          covariance += x * y
+          covariance += x * y;
         }
 
         covariance /= varLength;
-        covMatrix[i][j] = covariance
+        covMatrix[i][j] = covariance;
       }
     }
   }
@@ -64,10 +64,13 @@ export function findCovarianceMatrix(data: Matrix): Matrix {
   return covMatrix;
 }
 
-export function findGrid(points: Point[], gridSize = 100): Grid {
+export function findGrid(points: Point[], gridSize = 100, shift: Point = [0, 0]): Grid {
   const grid: {[key: string]: Point[]} = {};
   for (const point of points) {
-    const key: string = point.map((v) => Math.round(v / gridSize)).join(',');
+    const key: string = point.map((v: number, i: number) => {
+      const x = (v - shift[i] * gridSize);
+      return Math.round(x / gridSize);
+    }).join(',');
     if (!(key in grid)) {
       grid[key] = [];
     }
@@ -80,3 +83,57 @@ export function findGrid(points: Point[], gridSize = 100): Grid {
 function findMean(arr: number[]): number {
   return arr.reduce((sum, val) => sum + val, 0) / arr.length;
 }
+
+export function findMatrixMinor(matrix: Matrix, row: number, col: number): Matrix {
+  return matrix.filter((_, i) => i !== row).map(r => r.filter((_, j) => j !== col));
+}
+
+export function findDeterminant(matrix: Matrix): number {
+  if (matrix.length === 2) {
+    return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+  }
+  let det = 0;
+  for (let i = 0; i < matrix.length; i++) {
+    det += ((i % 2 === 0 ? 1 : -1) * matrix[0][i] * findDeterminant(findMatrixMinor(matrix, 0, i)));
+  }
+  return det;
+}
+
+export function findCofactor(matrix: Matrix, row: number, col: number): number {
+  return Math.pow(-1, row + col) * findDeterminant(findMatrixMinor(matrix, row, col));
+}
+
+export function findInverseMatrix(matrix: Matrix): Matrix {
+  const det = findDeterminant(matrix);
+  if (matrix.length === 2) {
+    // Inverse of a 2x2 matrix
+    return [
+      [matrix[1][1] / det, -matrix[0][1] / det],
+      [-matrix[1][0] / det, matrix[0][0] / det]
+    ];
+  }
+  // General inverse for larger matrices
+  const cofactors = matrix.map((row, i) =>
+    row.map((_, j) => findCofactor(matrix, i, j))
+  );
+  const adjugate = findTranspose(cofactors);
+  return adjugate.map(row => row.map(val => val / det));
+}
+
+// function multivariateNormalPDF(x: Point, mean: Point, covariance: Matrix): number {
+//   const d = mean.length;
+//   const covDet = findDeterminant(covariance);
+//   const covInv = inverse(covariance);
+  
+//   const diff = x.map((val, i) => val - mean[i]);
+  
+//   let exponent = 0;
+//   for (let i = 0; i < d; i++) {
+//       for (let j = 0; j < d; j++) {
+//           exponent += diff[i] * covInv[i][j] * diff[j];
+//       }
+//   }
+  
+//   const normalization = 1 / (Math.pow(2 * Math.PI, d / 2) * Math.sqrt(covDet));
+//   return normalization * Math.exp(-0.5 * exponent);
+// }
