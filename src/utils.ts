@@ -120,20 +120,20 @@ export function findInverseMatrix(matrix: Matrix): Matrix {
   return adjugate.map(row => row.map(val => val / det));
 }
 
-// function multivariateNormalPDF(x: Point, mean: Point, covariance: Matrix): number {
-//   const d = mean.length;
-//   const covDet = findDeterminant(covariance);
-//   const covInv = inverse(covariance);
+export function findMultivariateNormalPD(x: Point, mean: Point, covariance: Matrix): number {
+  const d = mean.length;
+  const covDet = findDeterminant(covariance);
+  const covInv = findInverseMatrix(covariance);
   
-//   const diff = x.map((val, i) => val - mean[i]);
+  const diff = x.map((val, i) => val - mean[i]);
   
-//   let exponent = 0;
-//   for (let i = 0; i < d; i++) {
-//       for (let j = 0; j < d; j++) {
-//           exponent += diff[i] * covInv[i][j] * diff[j];
-//       }
-//   }
+  let exponent = 0;
+  for (let i = 0; i < d; i++) {
+    for (let j = 0; j < d; j++) {
+      exponent += diff[i] * covInv[i][j] * diff[j];
+    }
+  }
   
-//   const normalization = 1 / (Math.pow(2 * Math.PI, d / 2) * Math.sqrt(covDet));
-//   return normalization * Math.exp(-0.5 * exponent);
-// }
+  const normalization = 1 / (Math.pow(2 * Math.PI, d / 2) * Math.sqrt(covDet));
+  return normalization * Math.exp(-0.5 * exponent);
+}

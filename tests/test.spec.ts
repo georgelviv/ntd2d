@@ -7,7 +7,7 @@ import {
   findMatrixMinor,
   findDeterminant,
   findCofactor,
-  findInverseMatrix
+  findInverseMatrix, findMultivariateNormalPD
 } from '../src';
 import { readCsvPoints } from './utils';
 
@@ -167,5 +167,11 @@ describe('findInverseMatrix', () => {
       [20, -15, -4],
       [-5, 4, 1]
     ]);
+  });
+});
+
+describe('findMultivariateNormalPD', () => {
+  it('should calculate probability density', () => {
+    expect(findMultivariateNormalPD([1, 1], [0, 0], [[1, 0.5], [0.5, 1]])).toEqual(0.09435389770895924);
   });
 });

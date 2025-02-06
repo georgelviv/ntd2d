@@ -3,5 +3,5 @@ export { Point, Result, Grid, NTDGrid } from './models';
 export {
   findCovarianceMatrix, findGrid, findPointsMean,
   findTranspose, findMatrixMinor, findDeterminant,
-  findCofactor, findInverseMatrix
+  findCofactor, findInverseMatrix, findMultivariateNormalPD
 } from './utils';
